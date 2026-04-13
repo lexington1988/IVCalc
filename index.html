@@ -3,71 +3,781 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lilac Flashcards App</title>
+  <title>Installation Volume Calculator</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg1: #2d0b45;
+      --bg2: #4b1979;
+      --container-bg: rgba(255, 255, 255, 0.08);
+      --section-bg: rgba(255, 255, 255, 0.06);
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --card-bg-strong: rgba(255, 255, 255, 0.16);
+      --text-main: #ffffff;
+      --text-soft: #e6d9f7;
+      --text-note: #ddd1ef;
+      --input-bg: #ffffff;
+      --input-text: #222222;
+      --button-bg: #ffffff;
+      --button-text: #4b1979;
+      --border-soft: rgba(255,255,255,0.15);
+      --border-strong: rgba(255,255,255,0.18);
+      --focus-ring: rgba(183, 132, 255, 0.35);
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      --danger: #ff6b6b;
+      --warning: #ffd166;
+    }
+
+    body.light-mode {
+      --bg1: #f3ecfb;
+      --bg2: #e4d4f7;
+      --container-bg: rgba(255, 255, 255, 0.82);
+      --section-bg: rgba(111, 50, 160, 0.07);
+      --card-bg: rgba(111, 50, 160, 0.09);
+      --card-bg-strong: rgba(111, 50, 160, 0.14);
+      --text-main: #2f1847;
+      --text-soft: #5d3b84;
+      --text-note: #6d5490;
+      --input-bg: #ffffff;
+      --input-text: #222222;
+      --button-bg: #4b1979;
+      --button-text: #ffffff;
+      --border-soft: rgba(75, 25, 121, 0.14);
+      --border-strong: rgba(75, 25, 121, 0.2);
+      --focus-ring: rgba(111, 50, 160, 0.2);
+      --shadow: 0 8px 24px rgba(75, 25, 121, 0.15);
+      --danger: #d62828;
+      --warning: #b26a00;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f7f3fb;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
       margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text-main);
+      min-height: 100vh;
       padding: 20px;
+      transition: background 0.25s ease, color 0.25s ease;
     }
-    h1 {
-      color: #7e57c2;
+
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+      background: var(--container-bg);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      transition: background 0.25s ease, box-shadow 0.25s ease;
     }
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      width: 100%;
-      text-align: center;
-      margin: 20px 0;
-    }
-    .buttons {
+
+    .top-bar {
       display: flex;
-      justify-content: space-around;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
+      background: var(--section-bg);
+      border-radius: 14px;
+      padding: 10px 14px;
     }
-    button {
-      background: #9575cd;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
+
+    .toggle-wrap label {
+      font-weight: bold;
+      color: var(--text-soft);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 54px;
+      height: 30px;
+      display: inline-block;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
       cursor: pointer;
-      font-size: 1rem;
+      background: rgba(255,255,255,0.25);
+      border-radius: 999px;
+      transition: 0.25s ease;
+      border: 1px solid var(--border-soft);
     }
-    button:hover {
-      background: #7e57c2;
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.25s ease;
     }
-    #start-btn {
-      margin-top: 40px;
+
+    .toggle-switch input:checked + .slider:before {
+      transform: translateX(24px);
     }
-    .hidden {
+
+    .toggle-switch input:checked + .slider {
+      background: #8d5bc4;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--text-soft);
+      font-size: 0.98rem;
+    }
+
+    .section {
+      margin-bottom: 24px;
+      background: var(--section-bg);
+      border-radius: 16px;
+      padding: 18px;
+      transition: background 0.25s ease;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--text-main);
+    }
+
+    .chevron {
+      font-size: 1.1rem;
+      color: var(--text-soft);
+      transition: transform 0.2s ease;
+    }
+
+    .section.collapsed .chevron {
+      transform: rotate(-90deg);
+    }
+
+    .section-body {
+      margin-top: 14px;
+    }
+
+    .section.collapsed .section-body {
       display: none;
+    }
+
+    .section-divider {
+      border-bottom: 1px solid var(--border-soft);
+      margin-top: 10px;
+      margin-bottom: 14px;
+    }
+
+    .grid-header,
+    .row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .grid-header {
+      font-weight: bold;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .row {
+      margin-bottom: 10px;
+    }
+
+    .label-box,
+    .factor-box,
+    .volume-box {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      transition: background 0.25s ease;
+    }
+
+    .factor-box,
+    .volume-box {
+      justify-content: center;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    input,
+    select,
+    button {
+      font-family: inherit;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+      background: var(--input-bg);
+      color: var(--input-text);
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .meter-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .result-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      transition: background 0.25s ease;
+    }
+
+    .result-card h3 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: var(--text-soft);
+      font-weight: normal;
+    }
+
+    .result-value {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .result-card.total {
+      grid-column: 1 / -1;
+      background: var(--card-bg-strong);
+      border: 2px solid var(--border-strong);
+    }
+
+    .result-card.total .result-value {
+      font-size: 2rem;
+      color: var(--text-main);
+    }
+
+    .permissible-card .result-value {
+      font-size: 1.25rem;
+    }
+
+    .drop-normal {
+      color: var(--text-main);
+    }
+
+    .drop-warning {
+      color: var(--warning);
+    }
+
+    .drop-danger {
+      color: var(--danger);
+    }
+
+    .total-danger {
+      color: var(--danger) !important;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    button {
+      background: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease, background 0.25s ease, color 0.25s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .note {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-note);
+    }
+
+    @media (max-width: 900px) {
+      .section-header {
+        cursor: pointer;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .top-bar {
+        justify-content: center;
+      }
+
+      .grid-header {
+        display: none;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 12px;
+      }
+
+      .label-box,
+      .factor-box,
+      .volume-box {
+        justify-content: flex-start;
+      }
+
+      .label-box::before {
+        content: "Pipe Size: ";
+        font-weight: bold;
+        color: var(--text-soft);
+        margin-right: 6px;
+      }
+
+      .factor-box::before {
+        content: "Factor: ";
+        font-weight: bold;
+        color: var(--text-soft);
+        margin-right: 6px;
+      }
+
+      .volume-box::before {
+        content: "Volume: ";
+        font-weight: bold;
+        color: var(--text-soft);
+        margin-right: 6px;
+      }
+
+      .settings-grid,
+      .meter-grid,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-card.total {
+        grid-column: auto;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Flashcards (Lilac SRS)</h1>
-  <div id="card" class="card hidden">
-    <div id="card-text">Click Start to begin</div>
+  <div class="container">
+    <div class="top-bar">
+      <div class="toggle-wrap">
+        <label for="themeToggle">Dark / Light</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="themeToggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <h1>Installation Volume Calculator</h1>
+    <div class="subtitle">Based on your Excel sheet, rebuilt into a clean and easy-to-use app</div>
+
+    <div id="calculator"></div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2>Fuel Gas & Meter Settings</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="settings-grid">
+        <div>
+          <label for="fuelGas">Fuel Gas</label>
+          <select id="fuelGas">
+            <option value="naturalGas">Natural Gas</option>
+            <option value="lpgAir">LPG/Air</option>
+            <option value="lpg">LPG</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="meterType">Meter Type</label>
+          <select id="meterType">
+            <option value="0.008">G4 / U6</option>
+            <option value="0.025">U16</option>
+            <option value="0.0024">E6</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="meter-grid" style="margin-top: 14px;">
+        <div>
+          <label>Meter Volume (m³)</label>
+          <div class="volume-box" id="meterVolumeDisplay">0.00800</div>
+        </div>
+        <div>
+          <label>Permissible Pressure Drop</label>
+          <div class="volume-box" id="permissibleDropDisplay">4 mbar</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2>Results</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="result-grid">
+        <div class="result-card">
+          <h3>Pipe Total</h3>
+          <div class="result-value" id="pipeTotal">0.00000 m³</div>
+        </div>
+
+        <div class="result-card">
+          <h3>Fittings Total (10%)</h3>
+          <div class="result-value" id="fittingsTotal">0.000000 m³</div>
+        </div>
+
+        <div class="result-card">
+          <h3>Meter Volume</h3>
+          <div class="result-value" id="meterTotal">0.00800 m³</div>
+        </div>
+
+        <div class="result-card permissible-card">
+          <h3>Maximum Permissible Pressure Drop</h3>
+          <div class="result-value drop-normal" id="permissibleDropResult">4 mbar</div>
+        </div>
+
+        <div class="result-card total">
+          <h3>Installation Volume Total</h3>
+          <div class="result-value" id="grandTotal">0.008000 m³</div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button id="resetBtn">Reset Calculator</button>
+      </div>
+
+      <div class="note">
+        Pipe total + 10% fittings allowance + selected meter volume
+      </div>
+    </div>
   </div>
-  <div class="buttons hidden" id="rating-buttons">
-    <button onclick="rateCard(1)">Again</button>
-    <button onclick="rateCard(2)">Hard</button>
-    <button onclick="rateCard(3)">Good</button>
-    <button onclick="rateCard(4)">Easy</button>
-  </div>
-  <button id="start-btn" onclick="startReview()">Start</button>
-  <script src="script.js"></script>
+
+  <script>
+    const sections = [
+      {
+        title: "Copper",
+        collapsed: false,
+        items: [
+          { label: "15 mm", factor: 0.00014, id: "copper15" },
+          { label: "22 mm", factor: 0.00032, id: "copper22" },
+          { label: "28 mm", factor: 0.00054, id: "copper28" },
+          { label: "35 mm", factor: 0.00084, id: "copper35" }
+        ]
+      },
+      {
+        title: "Steel",
+        collapsed: true,
+        items: [
+          { label: '1/2"', factor: 0.00024, id: "steel12" },
+          { label: '3/4"', factor: 0.00046, id: "steel34" },
+          { label: '1"', factor: 0.00064, id: "steel1" },
+          { label: '1 1/4"', factor: 0.00110, id: "steel114" }
+        ]
+      },
+      {
+        title: "CCST",
+        collapsed: true,
+        items: [
+          { label: "DN15", factor: 0.00021, id: "ccst15" },
+          { label: "DN20", factor: 0.00037, id: "ccst20" },
+          { label: "DN25", factor: 0.00065, id: "ccst25" },
+          { label: "DN32", factor: 0.00094, id: "ccst32" }
+        ]
+      }
+    ];
+
+    const calculator = document.getElementById("calculator");
+    const themeToggle = document.getElementById("themeToggle");
+    const fuelGasSelect = document.getElementById("fuelGas");
+    const meterTypeSelect = document.getElementById("meterType");
+    const permissibleDropDisplay = document.getElementById("permissibleDropDisplay");
+    const permissibleDropResult = document.getElementById("permissibleDropResult");
+    const grandTotalElement = document.getElementById("grandTotal");
+
+    function createSections() {
+      calculator.innerHTML = "";
+
+      sections.forEach((section, index) => {
+        const sectionEl = document.createElement("div");
+        sectionEl.className = section.collapsed ? "section collapsed" : "section";
+        sectionEl.setAttribute("data-section-index", index);
+
+        const rowsHtml = section.items.map(item => `
+          <div class="row">
+            <div class="label-box">${item.label}</div>
+            <div>
+              <input
+                type="number"
+                min="0"
+                step="any"
+                inputmode="decimal"
+                placeholder="Enter length"
+                class="length-input"
+                data-factor="${item.factor}"
+                data-volume-id="${item.id}-volume"
+              />
+            </div>
+            <div class="factor-box">${item.factor.toFixed(5)}</div>
+            <div class="volume-box" id="${item.id}-volume">0.00000 m³</div>
+          </div>
+        `).join("");
+
+        sectionEl.innerHTML = `
+          <div class="section-header" onclick="toggleSection(${index})">
+            <h2>${section.title}</h2>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="section-divider"></div>
+          <div class="section-body">
+            <div class="grid-header">
+              <div>Pipe Size</div>
+              <div>Total Length (m)</div>
+              <div>Factor (m³ per m)</div>
+              <div>Pipe Volume (m³)</div>
+            </div>
+            ${rowsHtml}
+          </div>
+        `;
+
+        calculator.appendChild(sectionEl);
+      });
+    }
+
+    function toggleSection(index) {
+      sections[index].collapsed = !sections[index].collapsed;
+      createSections();
+      restoreInputValues();
+      calculateTotals();
+    }
+
+    function formatVolume(value) {
+      return `${value.toFixed(5)} m³`;
+    }
+
+    function formatVolumeSix(value) {
+      return `${value.toFixed(6)} m³`;
+    }
+
+    function getPermissibleDrop(fuelGas, installationVolume) {
+      if (installationVolume > 0.035) {
+        return {
+          text: "Exceeds domestic limit — commercial installation",
+          className: "drop-danger"
+        };
+      }
+
+      if (fuelGas === "lpgAir") {
+        if (installationVolume <= 0.025) {
+          return { text: "1.5 mbar", className: "drop-normal" };
+        }
+        return { text: "0.5 mbar", className: "drop-normal" };
+      }
+
+      if (fuelGas === "naturalGas") {
+        if (installationVolume <= 0.005) {
+          return { text: "8 mbar", className: "drop-normal" };
+        }
+        if (installationVolume <= 0.010) {
+          return { text: "4 mbar", className: "drop-normal" };
+        }
+        if (installationVolume <= 0.015) {
+          return { text: "2.5 mbar", className: "drop-normal" };
+        }
+        return { text: "1 mbar", className: "drop-normal" };
+      }
+
+      if (fuelGas === "lpg") {
+        if (installationVolume <= 0.0025) {
+          return { text: "2 mbar", className: "drop-normal" };
+        }
+        if (installationVolume <= 0.005) {
+          return { text: "1 mbar", className: "drop-normal" };
+        }
+        if (installationVolume <= 0.01) {
+          return { text: "0.5 mbar", className: "drop-normal" };
+        }
+        return { text: "No perceptible movement", className: "drop-warning" };
+      }
+
+      return { text: "-", className: "drop-normal" };
+    }
+
+    function setDropDisplay(element, dropInfo) {
+      element.textContent = dropInfo.text;
+      element.classList.remove("drop-normal", "drop-warning", "drop-danger");
+      element.classList.add(dropInfo.className);
+    }
+
+    function updateGrandTotalStyle(grandTotal) {
+      if (grandTotal > 0.035) {
+        grandTotalElement.classList.add("total-danger");
+      } else {
+        grandTotalElement.classList.remove("total-danger");
+      }
+    }
+
+    function calculateTotals() {
+      let pipeTotal = 0;
+
+      document.querySelectorAll(".length-input").forEach(input => {
+        const factor = parseFloat(input.dataset.factor) || 0;
+        const value = parseFloat(input.value) || 0;
+        const volume = value * factor;
+        pipeTotal += volume;
+
+        const volumeBox = document.getElementById(input.dataset.volumeId);
+        volumeBox.textContent = formatVolume(volume);
+      });
+
+      const fittingsTotal = pipeTotal * 0.10;
+      const meterVolume = parseFloat(meterTypeSelect.value) || 0;
+      const grandTotal = pipeTotal + fittingsTotal + meterVolume;
+      const fuelGas = fuelGasSelect.value;
+      const dropInfo = getPermissibleDrop(fuelGas, grandTotal);
+
+      document.getElementById("pipeTotal").textContent = formatVolume(pipeTotal);
+      document.getElementById("fittingsTotal").textContent = formatVolumeSix(fittingsTotal);
+      document.getElementById("meterTotal").textContent = formatVolume(meterVolume);
+      document.getElementById("grandTotal").textContent = formatVolumeSix(grandTotal);
+      document.getElementById("meterVolumeDisplay").textContent = meterVolume.toFixed(5);
+
+      setDropDisplay(permissibleDropDisplay, dropInfo);
+      setDropDisplay(permissibleDropResult, dropInfo);
+      updateGrandTotalStyle(grandTotal);
+    }
+
+    function resetCalculator() {
+      document.querySelectorAll(".length-input").forEach(input => {
+        input.value = "";
+      });
+
+      meterTypeSelect.value = "0.008";
+      fuelGasSelect.value = "naturalGas";
+      calculateTotals();
+    }
+
+    function getInputValues() {
+      const values = {};
+      document.querySelectorAll(".length-input").forEach((input, index) => {
+        values[index] = input.value;
+      });
+      return values;
+    }
+
+    function restoreInputValues() {
+      if (!window.savedInputValues) return;
+
+      document.querySelectorAll(".length-input").forEach((input, index) => {
+        if (window.savedInputValues[index] !== undefined) {
+          input.value = window.savedInputValues[index];
+        }
+      });
+    }
+
+    function applyTheme(theme) {
+      if (theme === "light") {
+        document.body.classList.add("light-mode");
+        themeToggle.checked = true;
+      } else {
+        document.body.classList.remove("light-mode");
+        themeToggle.checked = false;
+      }
+      localStorage.setItem("ivTheme", theme);
+    }
+
+    document.addEventListener("input", function(e) {
+      if (e.target.classList.contains("length-input")) {
+        calculateTotals();
+      }
+    });
+
+    meterTypeSelect.addEventListener("change", calculateTotals);
+    fuelGasSelect.addEventListener("change", calculateTotals);
+    document.getElementById("resetBtn").addEventListener("click", resetCalculator);
+
+    themeToggle.addEventListener("change", function() {
+      applyTheme(this.checked ? "light" : "dark");
+    });
+
+    const originalCreateSections = createSections;
+    createSections = function() {
+      window.savedInputValues = getInputValues();
+      originalCreateSections();
+    };
+
+    createSections();
+    calculateTotals();
+
+    const savedTheme = localStorage.getItem("ivTheme") || "dark";
+    applyTheme(savedTheme);
+  </script>
 </body>
 </html>
