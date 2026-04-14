@@ -743,7 +743,7 @@
         ]
       },
       {
-        title: "Steel",
+        title: "Steel / CSST",
         collapsed: true,
         items: [
           { label: '1/2"', factor: 0.00024, id: "steel12" },
@@ -753,13 +753,12 @@
         ]
       },
       {
-        title: "CCST",
+        title: "PE Pipe",
         collapsed: true,
         items: [
-          { label: "DN15", factor: 0.00021, id: "ccst15" },
-          { label: "DN20", factor: 0.00037, id: "ccst20" },
-          { label: "DN25", factor: 0.00065, id: "ccst25" },
-          { label: "DN32", factor: 0.00094, id: "ccst32" }
+          { label: "20 mm", factor: 0.00019, id: "Pe20" },
+          { label: "25 mm", factor: 0.00033, id: "Pe25" },
+          { label: "32 mm", factor: 0.00053, id: "Pe32" }
         ]
       }
     ];
@@ -915,29 +914,32 @@
       }
     }
 
-    function getEnteredRows() {
-      const grouped = {
-        Copper: [],
-        Steel: [],
-        CCST: []
-      };
+   function getEnteredRows() {
+  const grouped = {};
 
-      document.querySelectorAll(".length-input").forEach(input => {
-        const length = parseFloat(input.value);
-        if (!isNaN(length) && length > 0) {
-          const factor = parseFloat(input.dataset.factor) || 0;
-          const volume = length * factor;
-          grouped[input.dataset.sectionTitle].push({
-            size: input.dataset.label,
-            length: length,
-            factor: factor,
-            volume: volume
-          });
-        }
+  document.querySelectorAll(".length-input").forEach(input => {
+    const length = parseFloat(input.value);
+
+    if (!isNaN(length) && length > 0) {
+      const factor = parseFloat(input.dataset.factor) || 0;
+      const volume = length * factor;
+      const sectionTitle = input.dataset.sectionTitle;
+
+      if (!grouped[sectionTitle]) {
+        grouped[sectionTitle] = [];
+      }
+
+      grouped[sectionTitle].push({
+        size: input.dataset.label,
+        length: length,
+        factor: factor,
+        volume: volume
       });
-
-      return grouped;
     }
+  });
+
+  return grouped;
+}
 
     function openAddressModal() {
       reportAddressInput.value = savedReportAddress;
